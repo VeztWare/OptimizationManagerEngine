@@ -37,7 +37,7 @@ function OptimizationManager.WatchDog.MonitorMemory(max: number, frequency: numb
                         OptimizationManager.API:Rejoin()
                     end
                 end
-            end
+            end)
         end
     end
 end
