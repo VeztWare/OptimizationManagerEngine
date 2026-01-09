@@ -13,27 +13,30 @@ local Stats = cloneref(game:GetService("Stats"))
 local TeleportService = cloneref(game:GetService("TeleportService"))
 local Players = cloneref(game:GetService("Players"))
 
-function OptimizationManager.GPU.SetRendering(state: boolean)
+function OptimizationManager.GPU:SetRendering(state: boolean)
     if type(state) == "boolean" then
         RunService:Set3dRenderingEnabled(state)
     end
 end
 
-function OptimizationManager.CPU.SetFPS(lim: number)
+function OptimizationManager.CPU:SetFPS(lim: number)
     if type(lim) == "number" and lim > 0 then
         setfpscap(lim)
     end
 end
 
-function OptimizationManager.WatchDog.MonitorMemory(max: number, frequency: number)
+function OptimizationManager.WatchDog:MonitorMemory(max: number, frequency: number)
     if type(max) == "number" and type(frequency) == "number" then
         self.Params.LastTimeChecked = tick()
         self.Params.MaxMemoryReservation = max
         if not self.Connections["WatchDog_MonitorMemory"] then
             self.Connections["WatchDog_MonitorMemory"] = RunService.Heartbeat:Connect(function(dt)
+            print("nothing", dt)
                 if tick() - self.Params.LastTimeChecked > frequency then
+                    print("its time")
                     self.Params.LastTimeChecked = tick()
                     if Stats:GetTotalMemoryUsageMb() > self.Params.MaxMemoryReservation then
+                        print("rejon")
                         OptimizationManager.API:Rejoin()
                     end
                 end
@@ -42,7 +45,7 @@ function OptimizationManager.WatchDog.MonitorMemory(max: number, frequency: numb
     end
 end
 
-function OptimizationManager.WatchDog.StopMemoryMonitor()
+function OptimizationManager.WatchDog:StopMemoryMonitor()
     local conn = self.Connections["WatchDog_MonitorMemory"]
     if conn then
         conn:Disconnect()
@@ -50,7 +53,7 @@ function OptimizationManager.WatchDog.StopMemoryMonitor()
     end
 end
 
-function OptimizationManager.API.Rejoin()
+function OptimizationManager.API:Rejoin()
     if #Players:GetPlayers() <= 1 then
 		Players.LocalPlayer:Kick("\nRejoining...")
 		wait()
@@ -60,13 +63,13 @@ function OptimizationManager.API.Rejoin()
 	end
 end
 
-function OptimizationManager.API.DisableAnimations()
+function OptimizationManager.API:DisableAnimations()
     for _, plr in pairs(Players:GetChildren()) do
         plr.Character.Animate.Disabled = true
     end
 end
 
-function OptimizationManager.API.CleanDrawingEffects()
+function OptimizationManager.API:CleanDrawingEffects()
     for _, obj in pairs(workspace:GetDescendants()) do
         if obj:IsA("ParticleEmitter") or obj:IsA("Decal") then
             obj:Destroy()
@@ -76,7 +79,7 @@ function OptimizationManager.API.CleanDrawingEffects()
     end
 end
 
-function OptimizationManager.API.CleanRenderingEffects()
+function OptimizationManager.API:CleanRenderingEffects()
     local Lighting = game:GetService("Lighting")
     local Terrain = workspace:FindFirstChild("Terrain")
 
@@ -143,13 +146,13 @@ function OptimizationManager.API.CleanRenderingEffects()
     end
 end
 
-function OptimizationManager.API.EnableAnimations()
+function OptimizationManager.API:EnableAnimations()
     for _, plr in pairs(Players:GetChildren()) do
         plr.Character.Animate.Disabled = false
     end
 end
 
-function OptimizationManager.GPU.ClearVisuals()
+function OptimizationManager.GPU:ClearVisuals()
     OptimizationManager.API:CleanDrawingEffects()
     OptimizationManager.API:CleanRenderingEffects()
     OptimizationManager.API:DisableAnimations()
