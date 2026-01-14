@@ -65,7 +65,9 @@ end
 
 function OptimizationManager.API:DisableAnimations()
     for _, plr in pairs(Players:GetChildren()) do
-        plr.Character.Animate.Disabled = true
+        if plr:FindFirstChild("Character") and plr.Character:FindFirstChild("Animate") then 
+            plr.Character.Animate.Disabled = true
+        end
     end
 end
 
@@ -148,7 +150,9 @@ end
 
 function OptimizationManager.API:EnableAnimations()
     for _, plr in pairs(Players:GetChildren()) do
-        plr.Character.Animate.Disabled = false
+        if plr:FindFirstChild("Character") and plr.Character:FindFirstChild("Animate") then 
+            plr.Character.Animate.Disabled = false
+        end
     end
 end
 
